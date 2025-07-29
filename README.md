@@ -31,6 +31,7 @@ pnpm build-storybook
 
 - **개발 환경**: `pnpm storybook` (localhost:6006)
 - **배포 환경**: Vercel (https://vercel.com)
+- **배포 주소**: https://cookiedeal-storybook.vercel.app/
 
 ### 배포 설정
 
