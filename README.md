@@ -1,69 +1,62 @@
-# React + TypeScript + Vite
+# CookieDeal Design System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+쿠키딜 디자인 시스템입니다.
 
-Currently, two official plugins are available:
+## 개발
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+# 의존성 설치
+pnpm install
 
-## Expanding the ESLint configuration
+# 개발 서버 실행
+pnpm dev
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Storybook 실행
+pnpm storybook
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 빌드
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# 프로덕션 빌드
+pnpm build
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Storybook 빌드
+pnpm build-storybook
 ```
+
+## 배포
+
+이 프로젝트는 Vercel을 통해 자동 배포됩니다.
+
+- **개발 환경**: `pnpm storybook` (localhost:6006)
+- **배포 환경**: Vercel (https://vercel.com)
+
+### 배포 설정
+
+- **빌드 명령어**: `pnpm run build-storybook`
+- **출력 디렉토리**: `storybook-static`
+- **Node.js 버전**: 18.x
+
+## 컴포넌트
+
+### Typo
+
+텍스트 컴포넌트입니다.
+
+```tsx
+import Typo from '@/components/Typo';
+
+<Typo $variant='body1Regular' $color='textDefaultNormal'>
+  텍스트 내용
+</Typo>;
+```
+
+## 기술 스택
+
+- React 19
+- TypeScript
+- Vite
+- Storybook
+- Styled Components
+- Vercel (배포)

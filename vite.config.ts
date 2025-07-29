@@ -17,6 +17,10 @@ export default defineConfig({
     alias: { '@': path.resolve(__dirname, 'src') },
   },
   plugins: [react()],
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+  },
   test: {
     projects: [
       {
