@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import Typo from '@/components/commons/Typo';
-import Flex from '@/components/commons/Flex';
-import Button from '@/components/commons/Button';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
+import React from "react";
+import styled from "styled-components";
+import Typo from "@/components/atoms/Typo";
+import Flex from "@/components/atoms/Flex";
+import Button from "@/components/atoms/Button";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 type Props = {
   content?: string | React.ReactNode;
@@ -29,7 +29,7 @@ const Confirm = ({
       <Window>
         <Flex $direction="column" $gap={{ row: isMobile ? 16 : 24 }} $isFull>
           <Typo
-            $variant={isMobile ? 'body2Regular' : 'subtitle1Bold'}
+            $variant={isMobile ? "body2Regular" : "subtitle1Bold"}
             $align="center"
           >
             {content}
@@ -42,10 +42,10 @@ const Confirm = ({
               $isFull
               onClick={onClose}
             >
-              {cancelText ? cancelText : '취소'}
+              {cancelText ? cancelText : "취소"}
             </Button>
             <Button $size="large" $isFull onClick={handleConfirm}>
-              {cancelText ? cancelText : '확인'}
+              {cancelText ? cancelText : "확인"}
             </Button>
           </Flex>
         </Flex>
@@ -65,7 +65,7 @@ const Container = styled.div<{ isOpen: boolean }>`
   left: 0;
   z-index: 9;
 
-  display: ${(props) => (props.isOpen ? 'block' : 'none')};
+  display: ${(props) => (props.isOpen ? "block" : "none")};
 `;
 
 const Window = styled(Flex)`
