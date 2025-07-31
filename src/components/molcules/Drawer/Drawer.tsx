@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import React, { useEffect } from 'react';
-import Icon from '@/components/commons/Icon';
+import styled from "styled-components";
+import React, { useEffect } from "react";
+import Icon from "@/components/atoms/Icon";
 
 type DrawerProps = {
   isOpen: boolean;
@@ -13,22 +13,22 @@ const Drawer = ({ isOpen, onClose, children, topSection }: DrawerProps) => {
   // ESC 키로 닫기
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
   // 외부(배경) 컴포넌트 스크롤 막기
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
       document.body.style.cssText = `position: relative`;
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 

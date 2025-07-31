@@ -1,10 +1,10 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import Tag from '@/components/commons/Tag';
-import { toast } from 'react-toastify';
-import Button from '@/components/commons/Button';
-import Typo from '@/components/commons/Typo';
-import Flex from '@/components/commons/Flex';
-import Input from '@/components/commons/Input';
+import { useState, useCallback, useEffect, useRef } from "react";
+import Tag from "@/components/atoms/Tag";
+import { toast } from "react-toastify";
+import Button from "@/components/atoms/Button";
+import Typo from "@/components/atoms/Typo";
+import Flex from "@/components/atoms/Flex";
+import Input from "@/components/atoms/Input";
 
 type Props = {
   onChange: (values: string[]) => void;
@@ -13,18 +13,18 @@ type Props = {
   defaultValues?: string[];
   rules?:
     | { maxInputLength: number }
-    | { regex: 'email' }
+    | { regex: "email" }
     | { maxCount: number };
 };
 
 const KeywordSelectInput = ({
   onChange,
-  placeholder = '키워드를 입력하세요',
+  placeholder = "키워드를 입력하세요",
   defaultValues,
   rules,
   hintText,
 }: Props) => {
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
   const [isAddingTag, setIsAddingTag] = useState<boolean>(false);
   const onChangeRef = useRef(onChange);
@@ -62,12 +62,12 @@ const KeywordSelectInput = ({
       setTags((prevTags) => {
         // 중복 키워드 체크
         if (prevTags.includes(trimmedValue)) {
-          toast.error('이미 존재하는 키워드입니다');
+          toast.error("이미 존재하는 키워드입니다");
           return prevTags;
         }
 
         // maxCount 체크
-        if (rules && 'maxCount' in rules) {
+        if (rules && "maxCount" in rules) {
           if (prevTags.length >= rules.maxCount) {
             toast.error(`최대 ${rules.maxCount}개까지 입력할 수 있습니다.`);
             return prevTags;
@@ -75,9 +75,9 @@ const KeywordSelectInput = ({
         }
 
         // email regex 체크
-        if (rules && 'regex' in rules && rules.regex === 'email') {
+        if (rules && "regex" in rules && rules.regex === "email") {
           if (!emailRegex.test(trimmedValue)) {
-            toast.error('이메일 형식이 아닙니다');
+            toast.error("이메일 형식이 아닙니다");
             return prevTags;
           }
         }
@@ -86,10 +86,10 @@ const KeywordSelectInput = ({
         return newTags;
       });
 
-      setInputValue('');
+      setInputValue("");
       setIsAddingTag(false);
     },
-    [rules, emailRegex, isAddingTag],
+    [rules, emailRegex, isAddingTag]
   );
 
   const removeTag = useCallback(
@@ -97,7 +97,7 @@ const KeywordSelectInput = ({
       const newTags = tags.filter((tag) => tag !== tagToRemove);
       setTags(newTags);
     },
-    [tags],
+    [tags]
   );
 
   const handleInputChange = useCallback(
@@ -105,7 +105,7 @@ const KeywordSelectInput = ({
       const newValue = e.target.value;
 
       // maxInputLength 체크
-      if (rules && 'maxInputLength' in rules) {
+      if (rules && "maxInputLength" in rules) {
         if (newValue.length <= rules.maxInputLength) {
           setInputValue(newValue);
         }
@@ -113,13 +113,13 @@ const KeywordSelectInput = ({
         setInputValue(newValue);
       }
     },
-    [rules],
+    [rules]
   );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       // Enter 키만 처리하고 나머지는 무시
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         e.preventDefault();
         e.stopPropagation();
         const currentValue = e.currentTarget.value;
@@ -127,7 +127,7 @@ const KeywordSelectInput = ({
         addTag(currentValue);
       }
     },
-    [addTag],
+    [addTag]
   );
 
   const handleButtonClick = useCallback(() => {
@@ -163,7 +163,7 @@ const KeywordSelectInput = ({
       </Flex>
 
       {tags.length > 0 && (
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           {tags.map((tag) => (
             <Tag key={tag} isDeletable onDeleteClick={() => removeTag(tag)}>
               {tag}

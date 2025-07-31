@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import styled, { css } from 'styled-components';
-import { v4 as uuidv4 } from 'uuid';
-import { formattedDate } from '@/utils/converter';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import Flex from '@/components/commons/Flex';
-import Typo from '@/components/commons/Typo';
-import Icon from '@/components/commons/Icon';
-import { StyledInput } from '@/components/commons/Checkbox';
+import React, { useEffect, useState } from "react";
+import styled, { css } from "styled-components";
+import { v4 as uuidv4 } from "uuid";
+import { formattedDate } from "@/utils/converter";
+import Flex from "@/components/atoms/Flex";
+import Typo from "@/components/atoms/Typo";
+import Icon from "@/components/atoms/Icon";
+import { StyledInput } from "@/components/atoms/Checkbox/Checkbox";
 
-type FormatType = 'date' | 'dateTime' | 'localeString' | 'percentage' | 'blur';
-type AlignType = 'left' | 'right' | 'center';
+type DbSortOrder = "asc" | "desc";
+type FormatType = "date" | "dateTime" | "localeString" | "percentage" | "blur";
+type AlignType = "left" | "right" | "center";
 
-export type SortByType = 'revenue' | 'operatingprofit' | 'ebitda' | undefined;
-export type SortOrderType = 'desc' | 'asc' | undefined;
+export type SortByType = "createdAt" | "recommendationCount" | undefined;
+type SortOrderType = DbSortOrder | undefined;
 
 export type TableHeadType = {
   text: string | React.ReactNode;
@@ -23,13 +23,16 @@ export type TableHeadType = {
   isEllipsis?: boolean; // 특정cell의 말줄임표 사용여부
   noWrap?: boolean; // 줄바꿈 금지
   isSortable?: boolean; // 클릭 시 오름or내림차순 정렬
+  maxLength?: number; // 텍스트 최대 길이
 };
 
 type TableProps = {
   head: TableHeadType[];
-  body?: Record<string, string | number | React.ReactNode>[];
+  body?: Record<
+    string,
+    string | number | React.ReactNode | ((i: any) => void)
+  >[];
   isShadow?: boolean;
-  isClickableRow?: boolean;
   fixedTableWidth?: number; // 고정된 테이블 너비(단위: px)
   checkedItems?: any[];
   onCheckboxChange?: (selectedItems: any[]) => void; // 체크박스 변경 시 콜백
@@ -42,7 +45,6 @@ const Table = ({
   head,
   body,
   isShadow = false,
-  isClickableRow = false,
   fixedTableWidth,
   checkedItems: externalCheckedItems,
   onCheckboxChange,
@@ -55,15 +57,13 @@ const Table = ({
 
   const checkedItems = externalCheckedItems || internalCheckedItems;
 
-  const router = useRouter();
-
   // 전체 선택 상태 확인 함수 추가
   const isAllChecked = () => {
     if (!body || body.length === 0) return false;
     return body.every((item) =>
       checkedItems.some(
-        (checkedItem) => checkedItem[checkboxKey!] === item[checkboxKey!],
-      ),
+        (checkedItem) => checkedItem[checkboxKey!] === item[checkboxKey!]
+      )
     );
   };
 
@@ -92,9 +92,9 @@ const Table = ({
         onChange={handleSelectAll}
         onClick={(e) => e.stopPropagation()}
         style={{
-          verticalAlign: 'middle',
-          textAlign: 'center',
-          minWidth: '1.125rem',
+          verticalAlign: "middle",
+          textAlign: "center",
+          minWidth: "1.125rem",
         }}
       />
     );
@@ -102,10 +102,10 @@ const Table = ({
 
   const handleCheckboxChange = (item: any) => {
     const newCheckedItems = checkedItems.some(
-      (checkedItem) => checkedItem[checkboxKey!] === item[checkboxKey!],
+      (checkedItem) => checkedItem[checkboxKey!] === item[checkboxKey!]
     )
       ? checkedItems.filter(
-          (checkedItem) => checkedItem[checkboxKey!] !== item[checkboxKey!],
+          (checkedItem) => checkedItem[checkboxKey!] !== item[checkboxKey!]
         )
       : [...checkedItems, item];
 
@@ -118,13 +118,13 @@ const Table = ({
       <StyledInput
         type="checkbox"
         checked={checkedItems.some(
-          (checkedItem) => checkedItem[checkboxKey!] === item[checkboxKey!],
+          (checkedItem) => checkedItem[checkboxKey!] === item[checkboxKey!]
         )}
         onChange={() => handleCheckboxChange(item)}
         onClick={(e) => e.stopPropagation()} // 행 클릭 이벤트와 충돌 방지
         style={{
-          verticalAlign: 'middle',
-          textAlign: 'center',
+          verticalAlign: "middle",
+          textAlign: "center",
         }}
       />
     );
@@ -147,15 +147,15 @@ const Table = ({
     value?: number | string;
     type: FormatType;
   }) => {
-    if (!value) return '-';
+    if (!value) return "-";
     switch (type) {
-      case 'date':
+      case "date":
         return formattedDate(value.toString());
-      case 'dateTime':
-        return formattedDate(value.toString(), 'yyyy.MM.dd HH:mm:ss');
-      case 'localeString':
+      case "dateTime":
+        return formattedDate(value.toString(), "yyyy.MM.dd HH:mm:ss");
+      case "localeString":
         return Number(value)?.toLocaleString();
-      case 'percentage':
+      case "percentage":
         return `${value}%`;
 
       default:
@@ -164,14 +164,13 @@ const Table = ({
   };
 
   // 오름or내림차순
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-
+  const pathname = window.location.pathname;
+  const searchParams = new URLSearchParams(window.location.search);
   const [sortOrder, setSortOrder] = useState<SortOrderType>(undefined);
   const [sortBy, setSortBy] = useState<SortByType>(undefined);
 
-  const paramsSortOrder = searchParams.get('sortOrder') || undefined;
-  const paramsSortBy = searchParams.get('sortBy') || undefined;
+  const paramsSortOrder = searchParams.get("sortOrder") || undefined;
+  const paramsSortBy = searchParams.get("sortBy") || undefined;
 
   const params = new URLSearchParams(searchParams.toString());
   useEffect(() => {
@@ -181,9 +180,9 @@ const Table = ({
 
   const renderArrow = (key: string) => {
     if (key === sortBy) {
-      if (sortOrder === 'desc') {
+      if (sortOrder === "desc") {
         return <Icon size={16} name="down" color="iconDefaultWeak" />;
-      } else if (sortOrder === 'asc') {
+      } else if (sortOrder === "asc") {
         return <Icon size={16} name="up" color="iconDefaultWeak" />;
       }
     }
@@ -193,10 +192,10 @@ const Table = ({
   const handleChangeSort = (key: SortByType) => {
     // 만약 새로운 헤더를 클릭한 경우라면, 정렬 상태를 초기화
     if (key !== sortBy) {
-      params.set('page', '1');
-      params.set('sortBy', key!.toString() || '');
-      params.set('sortOrder', 'desc'); // 새 헤더는 항상 오름차순으로 시작
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      params.set("page", "1");
+      params.set("sortBy", key!.toString() || "");
+      params.set("sortOrder", "desc"); // 새 헤더는 항상 오름차순으로 시작
+      window.location.href = `${pathname}?${params.toString()}`;
       return;
     }
 
@@ -204,27 +203,27 @@ const Table = ({
     else {
       switch (sortOrder) {
         // 현재 내림차순 중이면 > 오름차순으로 바뀜
-        case 'desc':
-          params.set('page', '1');
-          params.set('sortBy', key!.toString() || '');
-          params.set('sortOrder', 'asc');
-          router.push(`${pathname}?${params.toString()}`, { scroll: false });
+        case "desc":
+          params.set("page", "1");
+          params.set("sortBy", key!.toString() || "");
+          params.set("sortOrder", "asc");
+          window.location.href = `${pathname}?${params.toString()}`;
           return;
 
         // 현재 오름차순 중이면 > 정렬 없애기
-        case 'asc':
-          params.set('page', '1');
-          params.delete('sortBy');
-          params.delete('sortOrder');
-          router.push(`${pathname}?${params.toString()}`, { scroll: false });
+        case "asc":
+          params.set("page", "1");
+          params.delete("sortBy");
+          params.delete("sortOrder");
+          window.location.href = `${pathname}?${params.toString()}`;
           return;
 
         // 현재 정렬 없는 상태면 > 내림차순으로 바뀜
         case undefined:
-          params.set('page', '1');
-          params.set('sortBy', key!.toString() || '');
-          params.set('sortOrder', 'desc');
-          router.push(`${pathname}?${params.toString()}`, { scroll: false });
+          params.set("page", "1");
+          params.set("sortBy", key!.toString() || "");
+          params.set("sortOrder", "desc");
+          window.location.href = `${pathname}?${params.toString()}`;
           return;
 
         default:
@@ -233,17 +232,23 @@ const Table = ({
     }
   };
 
+  // 텍스트 자르기 함수 추가
+  const truncateText = (text: string, maxLength?: number) => {
+    if (!maxLength || text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+  };
+
   return (
     mount && (
       <div
-        style={{ position: 'relative', overflowX: 'auto', maxWidth: '100%' }}
+        style={{ position: "relative", overflowX: "auto", maxWidth: "100%" }}
       >
         <StyledTable $isShadow={isShadow} $fixedTableWidth={fixedTableWidth}>
           <Thead>
             <TheadTr>
-              {head.map((item) => (
+              {head.map((item, index) => (
                 <Th
-                  key={item.key}
+                  key={`${item.key}-${index}`}
                   $width={item.width}
                   $isClickableHead={!!item.isSortable}
                   {...(item.isSortable && {
@@ -254,16 +259,16 @@ const Table = ({
                 >
                   <Flex
                     $justify={
-                      item.align === 'left'
-                        ? 'start'
-                        : item.align === 'right'
-                        ? 'end'
-                        : 'center'
+                      item.align === "left"
+                        ? "start"
+                        : item.align === "right"
+                        ? "end"
+                        : "center"
                     }
                     $gap={{ column: 8 }}
                     $isFull
                   >
-                    {item.key === 'checkbox' ? (
+                    {item.key === "checkbox" ? (
                       renderSelectAllCheckbox()
                     ) : (
                       <Typo
@@ -292,40 +297,51 @@ const Table = ({
             {isEmpty ? (
               <tr>
                 <NoData colSpan={head.length}>
-                  {emptyContent ? emptyContent : '데이터가 존재하지 않습니다.'}
+                  {emptyContent ? emptyContent : "데이터가 존재하지 않습니다."}
                 </NoData>
               </tr>
             ) : (
               body?.map((bodyItem) => (
-                <BodyTr key={uuidv4()}>
+                <BodyTr
+                  key={uuidv4()}
+                  onClick={
+                    bodyItem.onClickRow
+                      ? () => (bodyItem.onClickRow as () => void)()
+                      : undefined
+                  }
+                  style={{
+                    cursor: bodyItem.onClickRow ? "pointer" : "default",
+                  }}
+                >
                   {head.map((headItem) => {
-                    return headItem.key === 'checkbox' ? (
+                    const cellValue = bodyItem[headItem.key];
+                    const displayValue =
+                      typeof cellValue === "string"
+                        ? truncateText(cellValue, headItem.maxLength)
+                        : cellValue;
+
+                    return headItem.key === "checkbox" ? (
                       <CheckboxTd key={uuidv4()}>
                         {renderCheckbox(bodyItem)}
                       </CheckboxTd>
                     ) : (
                       <StyledTd
                         key={uuidv4()}
-                        $align={headItem.align ?? 'center'}
+                        $align={headItem.align ?? "center"}
                         $isEllipsis={headItem.isEllipsis ?? false}
                         $noWrap={headItem.noWrap ?? false}
-                        // TODO!! refactor...
-                        {...(isClickableRow && {
-                          onClick: () => {
-                            router.push(`${bodyItem.targetUrl}`);
-                          },
-                        })}
-                        style={{
-                          cursor: isClickableRow ? 'pointer' : 'default',
-                        }}
                       >
                         {headItem.format
-                          ? typeof bodyItem[headItem.key] !== 'object' &&
+                          ? typeof displayValue !== "object" &&
                             formatter({
                               type: headItem.format,
-                              value: bodyItem[headItem.key] as string | number,
+                              value: displayValue as string | number,
                             })
-                          : bodyItem[headItem.key] || '-'}
+                          : displayValue === undefined ||
+                            displayValue === null ||
+                            typeof displayValue === "function"
+                          ? "-"
+                          : displayValue}
                       </StyledTd>
                     );
                   })}
@@ -346,7 +362,7 @@ const StyledTable = styled.table<{
   $fixedTableWidth?: number;
 }>`
   width: ${({ $fixedTableWidth }) =>
-    $fixedTableWidth ? `${$fixedTableWidth / 16}rem` : '100%'};
+    $fixedTableWidth ? `${$fixedTableWidth / 16}rem` : "100%"};
   background-color: #fff;
   overflow: auto;
   table-layout: fixed;
@@ -392,13 +408,15 @@ const Tbody = styled.tbody`
 `;
 
 const StyledTd = styled.td<{
-  $align: 'left' | 'right' | 'center';
+  $align: "left" | "right" | "center";
   $isEllipsis: boolean;
   $noWrap: boolean;
 }>`
   text-align: ${({ $align }) => $align};
-
-  word-break: keep-all;
+  height: 100%;
+  min-height: 100%;
+  word-break: break-word;
+  word-wrap: break-word;
   vertical-align: middle;
 
   // font style
@@ -406,11 +424,11 @@ const StyledTd = styled.td<{
 
   > div {
     ${({ $align }) => {
-      if ($align === 'left') {
+      if ($align === "left") {
         return css`
           justify-content: flex-start;
         `;
-      } else if ($align === 'right') {
+      } else if ($align === "right") {
         return css`
           justify-content: flex-end;
         `;
@@ -430,8 +448,7 @@ const StyledTd = styled.td<{
       white-space: nowrap;
     `}
 
-  border-bottom: 1px solid
-        ${({ theme }) => theme.colors.borderDefaultWeaker};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.borderDefaultWeaker};
   padding: 0.75rem 1rem;
   font-weight: 500;
   color: ${({ theme }) => theme.colors.textDefaultNormal};
@@ -441,9 +458,16 @@ const StyledTd = styled.td<{
     css`
       white-space: nowrap;
     `}
+
+  &:not(:last-child) {
+    border-right: 1px solid ${({ theme }) => theme.colors.borderDefaultWeaker};
+  }
 `;
 
 const BodyTr = styled.tr`
+  height: 100%;
+  min-height: 100%;
+
   &:hover {
     background-color: ${({ theme }) =>
       theme.colors.backgroundDefaultDifferentiate};
@@ -467,7 +491,7 @@ const Th = styled.th<{
   $width?: number;
   $isClickableHead?: boolean;
 }>`
-  width: ${(props) => (props.$width ? `${props.$width / 16}rem` : 'auto')};
+  width: ${(props) => (props.$width ? `${props.$width / 16}rem` : "auto")};
   text-align: center;
   white-space: pre-wrap;
   vertical-align: middle;
@@ -479,7 +503,11 @@ const Th = styled.th<{
   border-bottom: 1px solid ${({ theme }) => theme.colors.borderDefaultWeaker};
 
   cursor: ${({ $isClickableHead }) =>
-    $isClickableHead ? 'pointer' : 'default'};
+    $isClickableHead ? "pointer" : "default"};
+
+  &:not(:last-child) {
+    border-right: 1px solid ${({ theme }) => theme.colors.borderDefaultWeaker};
+  }
 `;
 
 const CheckboxTd = styled.td`

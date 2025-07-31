@@ -1,21 +1,33 @@
-import { InputHTMLAttributes, forwardRef, useEffect, useState } from 'react';
-import styled, { css } from 'styled-components';
-import Typo from '@/components/commons/Typo';
-import { formatNumberAll } from '@/utils/converter';
-import Flex from '@/components/commons/Flex';
+import {
+  type InputHTMLAttributes,
+  forwardRef,
+  useEffect,
+  useState,
+} from "react";
+import styled, { css } from "styled-components";
+import Typo from "@/components/atoms/Typo";
+import { formatNumberAll } from "@/utils/converter";
+import Flex from "@/components/atoms/Flex";
 
 type InputProps = {
   label?: string;
   errorMsg?: string;
   fixedText?: { left?: string; right?: string };
-  align?: 'left' | 'right';
+  align?: "left" | "right";
   isBlocked?: boolean;
 } & InputHTMLAttributes<HTMLInputElement>;
 
+/**
+ *
+ * input에 숫자를 입력했을 때, 아래에 한글로 표시해줍니다.
+ *
+ * 현재는 쿠키딜서비스에서 사용되는 곳이 없으나, 추후 재사용 가능성이 있어 남겨둡니다.
+ *
+ */
 const KoreanUnitInput = forwardRef<HTMLInputElement, InputProps>(
   (
-    { label, errorMsg, fixedText, align = 'left', isBlocked, ...props },
-    ref,
+    { label, errorMsg, fixedText, align = "left", isBlocked, ...props },
+    ref
   ) => {
     const [convertedValue, setConvertedValue] = useState<string>();
 
@@ -23,7 +35,7 @@ const KoreanUnitInput = forwardRef<HTMLInputElement, InputProps>(
       const value = Number(e.target.value);
 
       // 들어온게 숫자값이면 한글로 표기
-      if (typeof value === 'number' && !isNaN(Number(value))) {
+      if (typeof value === "number" && !isNaN(Number(value))) {
         setConvertedValue(formatNumberAll(value));
       } else {
         setConvertedValue(undefined);
@@ -44,7 +56,7 @@ const KoreanUnitInput = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <Typo $variant="subtitle1Bold">
             {label}
-            {props.required && '*'}
+            {props.required && "*"}
           </Typo>
         )}
         <FakeDiv>
@@ -75,10 +87,10 @@ const KoreanUnitInput = forwardRef<HTMLInputElement, InputProps>(
         </Flex>
       </Flex>
     );
-  },
+  }
 );
 
-KoreanUnitInput.displayName = 'KoreanUnitInput';
+KoreanUnitInput.displayName = "KoreanUnitInput";
 
 export default KoreanUnitInput;
 
@@ -102,7 +114,7 @@ const FakeDiv = styled.div`
   background-color: #fff;
   border-radius: 0.625rem;
 `;
-const DecoText = styled.span<{ $position: 'left' | 'right' }>`
+const DecoText = styled.span<{ $position: "left" | "right" }>`
   color: ${({ theme }) => theme.colors.textDefaultWeak};
   white-space: nowrap;
 
@@ -113,7 +125,7 @@ const DecoText = styled.span<{ $position: 'left' | 'right' }>`
   }
 
   ${({ $position }) =>
-    $position === 'left'
+    $position === "left"
       ? css`
           margin-left: 0.75rem;
         `
@@ -122,7 +134,7 @@ const DecoText = styled.span<{ $position: 'left' | 'right' }>`
         `}
 `;
 
-const StyledInput = styled.input<{ $align: 'left' | 'right' }>`
+const StyledInput = styled.input<{ $align: "left" | "right" }>`
   margin-right: 0.125rem;
   text-align: ${({ $align }) => $align};
   color: ${({ theme }) => theme.colors.textDefaultStrong};
@@ -141,7 +153,7 @@ const StyledInput = styled.input<{ $align: 'left' | 'right' }>`
     margin: 0;
   }
 
-  &[type='number'] {
+  &[type="number"] {
     -moz-appearance: textfield; /* Firefox */
   }
 `;

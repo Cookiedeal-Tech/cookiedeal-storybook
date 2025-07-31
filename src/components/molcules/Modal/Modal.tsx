@@ -1,9 +1,9 @@
-import { useRef, useEffect, useState, useLayoutEffect } from 'react';
-import styled, { css } from 'styled-components';
-import Typo from '@/components/commons/Typo';
-import Icon from '@/components/commons/Icon';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
-import Portal from '@/components/commons/Portal';
+import { useRef, useEffect, useState, useLayoutEffect } from "react";
+import styled, { css } from "styled-components";
+import Typo from "@/components/atoms/Typo";
+import Icon from "@/components/atoms/Icon";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import Portal from "@/components/atoms/Portal";
 
 /**
  * 모달 case
@@ -30,6 +30,13 @@ export type ModalProps = {
   $footer?: React.ReactNode;
 };
 
+/**
+ *
+ * PC/mobile 환경에 따라 형태가 자동 변환됩니다.
+ *
+ * (pc에선 화면 중앙에 뜨고, 모바일에선 full width + bottom sheet 형태)
+ *
+ */
 const Modal = ({
   open,
   onClose,
@@ -45,8 +52,6 @@ const Modal = ({
   $isMobileFullWidth = false,
   $isMobileFullHeight = false,
 }: ModalProps) => {
-  const { isMobile } = useMediaQuery();
-
   const ref = useRef<HTMLDivElement>(null);
 
   // dim 영역 클릭 시 close
@@ -61,13 +66,13 @@ const Modal = ({
   // 외부(배경) 컴포넌트 스크롤 막기
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
       document.body.style.cssText = `position: relative`;
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [open]);
 
@@ -101,12 +106,12 @@ const Modal = ({
     checkScrollable();
 
     if (sheetRef.current) {
-      sheetRef.current.addEventListener('scroll', handleScroll);
+      sheetRef.current.addEventListener("scroll", handleScroll);
     }
 
     return () => {
       if (sheetRef.current) {
-        sheetRef.current.removeEventListener('scroll', handleScroll);
+        sheetRef.current.removeEventListener("scroll", handleScroll);
       }
     };
   }, [open]);
@@ -118,7 +123,7 @@ const Modal = ({
       <Background open={open}>
         <div
           ref={ref}
-          style={{ position: 'relative', width: '100%', height: '100%' }}
+          style={{ position: "relative", width: "100%", height: "100%" }}
           onClick={handleClose}
         >
           <Container
@@ -137,7 +142,7 @@ const Modal = ({
             )}
 
             {$title && (
-              <Typo $variant={'subtitle1Bold'} $color="textDefaultStrong">
+              <Typo $variant={"subtitle1Bold"} $color="textDefaultStrong">
                 {$title}
               </Typo>
             )}
@@ -162,7 +167,7 @@ const Background = styled.div<{ open: boolean }>`
   top: 0;
   left: 0;
   z-index: 9;
-  display: ${({ open }) => (open ? 'block' : 'none')};
+  display: ${({ open }) => (open ? "block" : "none")};
 `;
 const Container = styled.div<{
   $isFull: boolean;
@@ -196,11 +201,11 @@ const Container = styled.div<{
   ${({ theme }) => theme.device.belowTablet} {
     width: 100%;
     max-width: ${({ $isMobileFullWidth }) =>
-      $isMobileFullWidth ? '100vw' : '92vw'};
+      $isMobileFullWidth ? "100vw" : "92vw"};
     bottom: 0;
-    top: ${({ $isMobileFullHeight }) => ($isMobileFullHeight ? '0' : 'auto')};
+    top: ${({ $isMobileFullHeight }) => ($isMobileFullHeight ? "0" : "auto")};
     max-height: ${({ $isMobileFullHeight }) =>
-      $isMobileFullHeight ? '100vh' : '80vh'};
+      $isMobileFullHeight ? "100vh" : "80vh"};
     padding: 1.5rem;
 
     // 모바일에선 화면 중앙이 아닌 아래 쪽에 뜨도록 함
@@ -217,15 +222,15 @@ const Container = styled.div<{
             transform: none;
             max-width: 100vw;
             padding: 1.5rem;
-            height: ${$isExpanded ? '100vh' : '50vh'};
+            height: ${$isExpanded ? "100vh" : "50vh"};
             transition: height 0.3s ease-in-out;
             overflow-y: auto;
 
             height: ${$isScrollable
               ? $isExpanded
-                ? '100vh'
-                : '50vh'
-              : 'auto'};
+                ? "100vh"
+                : "50vh"
+              : "auto"};
           `
         : css``;
     }}

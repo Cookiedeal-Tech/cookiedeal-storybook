@@ -1,7 +1,6 @@
-import styled from 'styled-components';
-import { FIXED_HEIGHT } from '@/components/commons/MobileHeader';
-import Flex from '@/components/commons/Flex';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
+import styled from "styled-components";
+import Flex from "@/components/atoms/Flex";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export type MobileStickyBarProps = {
   $top?: number; // sticky로 붙을 위치의 px단위
@@ -20,6 +19,8 @@ export type MobileStickyBarProps = {
  * <div style={{ overflow: 'auto', flex: 1 }}> ... </div>
  *
  */
+
+const FIXED_HEIGHT = 48;
 const MobileStickyBar = ({
   children,
   $top = FIXED_HEIGHT,
@@ -46,10 +47,10 @@ const Container = styled(Flex)<{ $top: number; $bottom?: number }>`
   top: ${({ $top }) => $top / 16}rem;
 
   bottom: ${({ $bottom }) => {
-    if (typeof $bottom !== 'undefined') {
+    if (typeof $bottom !== "undefined") {
       return `${$bottom / 16}rem`;
     }
-    return 'auto';
+    return "auto";
   }};
 
   z-index: 8;

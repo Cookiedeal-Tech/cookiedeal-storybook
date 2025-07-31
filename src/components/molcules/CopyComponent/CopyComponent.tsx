@@ -11,7 +11,7 @@ type Props<T extends ElementType> = {
 
 /**
  *
- * 현재 url을 복사하는 컴포넌트 (스토리북 환경에선 toast가 뜨지 않지만, 실제 환경에선 성공/실패 시 토스트 메시지가 뜹니다)
+ * 현재 url을 복사하는 컴포넌트 (스토리북 환경에선 toast가 뜨지 않지만, 실제 환경에선 성공/실패 시 toast 메시지가 뜹니다)
  *
  * */
 const CopyComponent = <T extends ElementType>({

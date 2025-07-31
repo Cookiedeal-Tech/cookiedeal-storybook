@@ -1,12 +1,7 @@
-import React, {
-  useState,
-  MouseEvent,
-  TouchEvent,
-  useEffect,
-  useMemo,
-} from 'react';
-import styled from 'styled-components';
-import Chip from '@/components/commons/Chip';
+import React, { useState, useEffect, useMemo } from "react";
+import type { MouseEvent, TouchEvent } from "react";
+import styled from "styled-components";
+import Chip from "@/components/atoms/Chip";
 
 type Props = {
   sliderSteps?: number[];
@@ -23,6 +18,11 @@ type Props = {
   resetTrigger?: boolean;
 };
 
+/**
+ * 예전에 쓰였던 컴포넌트지만, 유저 사용성 문제로 현재 쿠키딜앱에서 쓰이는 곳은 없습니다. 다만 추후 다시 사용할 가능성이 있어보여 남겨둡니다.
+ *
+ * 아래 컴포넌트에서 발생하는 에러는 환경차이(스토리북 React, 쿠키딜 Nextjs)에서 비롯된 것으로, 쿠키딜앱에서는 정상동작합니다.
+ */
 const PriceSlider = ({
   sliderSteps = [0, 10, 20, 30, 50, 80, 100, 500],
   onCompleteChange,
@@ -33,7 +33,7 @@ const PriceSlider = ({
 }: Props) => {
   const totalSteps = useMemo(
     () => (sliderSteps.length - 1) * 10, // 각 구간을 10틱으로 나눔
-    [sliderSteps],
+    [sliderSteps]
   );
 
   const [minValue, setMinValue] = useState<number | undefined>(undefined);
@@ -59,27 +59,27 @@ const PriceSlider = ({
 
   const handleMove = (
     event: MouseEvent | TouchEvent,
-    handleType: 'min' | 'max',
+    handleType: "min" | "max"
   ) => {
     const sliderRect = (event.target as HTMLElement)
-      .closest('.slider-container')
+      .closest(".slider-container")
       ?.getBoundingClientRect();
     if (!sliderRect) return;
 
     const clientX =
-      'touches' in event ? event.touches[0].clientX : event.clientX;
+      "touches" in event ? event.touches[0].clientX : event.clientX;
     const x = clientX - sliderRect.left;
     const percentage = Math.max(0, Math.min(1, x / sliderRect.width));
-    let newStep = Math.round(percentage * totalSteps);
+    const newStep = Math.round(percentage * totalSteps);
 
     // 기존 로직: 맨 오른쪽을 넘어가면 maxValue=undefined
-    if (handleType === 'max' && newStep >= totalSteps) {
+    if (handleType === "max" && newStep >= totalSteps) {
       setMaxValue(undefined);
       return;
     }
 
     // min 핸들 움직임
-    if (handleType === 'min') {
+    if (handleType === "min") {
       // (maxValue가 undefined이거나, newStep <= maxValue)이면 그냥 minValue = newStep
       if (maxValue === undefined || newStep <= maxValue) {
         setMinValue(newStep);
@@ -104,7 +104,7 @@ const PriceSlider = ({
 
   const handleDragStart = (
     event: React.MouseEvent | React.TouchEvent,
-    handleType: 'min' | 'max',
+    handleType: "min" | "max"
   ) => {
     event.preventDefault();
     setIsDragging(true);
@@ -114,21 +114,21 @@ const PriceSlider = ({
       setIsDragging(false);
       setSelectedChip(undefined);
       document.removeEventListener(
-        'mousemove',
-        onMove as unknown as EventListener,
+        "mousemove",
+        onMove as unknown as EventListener
       );
-      document.removeEventListener('mouseup', onEnd);
+      document.removeEventListener("mouseup", onEnd);
       document.removeEventListener(
-        'touchmove',
-        onMove as unknown as EventListener,
+        "touchmove",
+        onMove as unknown as EventListener
       );
-      document.removeEventListener('touchend', onEnd);
+      document.removeEventListener("touchend", onEnd);
     };
 
-    document.addEventListener('mousemove', onMove as unknown as EventListener);
-    document.addEventListener('mouseup', onEnd);
-    document.addEventListener('touchmove', onMove as unknown as EventListener);
-    document.addEventListener('touchend', onEnd);
+    document.addEventListener("mousemove", onMove as unknown as EventListener);
+    document.addEventListener("mouseup", onEnd);
+    document.addEventListener("touchmove", onMove as unknown as EventListener);
+    document.addEventListener("touchend", onEnd);
   };
 
   const handleButtonClick = (value: number) => {
@@ -211,7 +211,7 @@ const PriceSlider = ({
   const getPositions = (
     minValue: number | undefined,
     maxValue: number | undefined,
-    totalSteps: number,
+    totalSteps: number
   ) => {
     // 둘 다 undefined면 전체범위로 간주
     if (minValue === undefined && maxValue === undefined) {
@@ -256,35 +256,35 @@ const PriceSlider = ({
   const getMinLabelText = (): string => {
     // 1) min=0, max=0 -> "0"
     if (minValue === 0 && maxValue === 0) {
-      return '0';
+      return "0";
     }
     // 2) min=500, max=0 => minValue = totalSteps(=70), maxValue=0 => ''
     if (minValue === totalSteps && maxValue === 0) {
-      return '';
+      return "";
     }
     // 3) min=undefined, max=undefined -> "0"
     if (minValue === undefined && maxValue === undefined) {
-      return '0';
+      return "0";
     }
     if (minValue === maxValue) {
-      return '';
+      return "";
     }
     // 기본
-    return minValue !== undefined ? `${getSliderValue(minValue)}억` : '0';
+    return minValue !== undefined ? `${getSliderValue(minValue)}억` : "0";
   };
 
   const getMaxLabelText = (): string => {
     // 1) min=0, max=0 -> "500억+"
     if (minValue === 0 && maxValue === 0) {
-      return '';
+      return "";
     }
     // 2) min=500, max=0 -> "500억+"
     if (minValue === totalSteps && maxValue === 0) {
-      return '500억+';
+      return "500억+";
     }
     // 3) min=500 & max=500 => 둘 다 500억이면 "500억+"
     if (minValue === totalSteps && maxValue === totalSteps) {
-      return '500억+';
+      return "500억+";
     }
     // 기본
     return maxValue !== undefined
@@ -297,16 +297,16 @@ const PriceSlider = ({
 
   return (
     <SliderContainer className="slider-container">
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: "relative" }}>
         <Handle
           style={{
             left: `${minPos}%`,
             zIndex: 3,
           }}
-          onMouseDown={(e) => handleDragStart(e, 'min')}
-          onTouchStart={(e) => handleDragStart(e, 'min')}
+          onMouseDown={(e) => handleDragStart(e, "min")}
+          onTouchStart={(e) => handleDragStart(e, "min")}
         >
-          <Label style={{ display: isBothAtMax ? 'none' : 'block' }}>
+          <Label style={{ display: isBothAtMax ? "none" : "block" }}>
             {getMinLabelText()}
           </Label>
         </Handle>
@@ -315,8 +315,8 @@ const PriceSlider = ({
             left: `${maxPos}%`,
             zIndex: 2,
           }}
-          onMouseDown={(e) => handleDragStart(e, 'max')}
-          onTouchStart={(e) => handleDragStart(e, 'max')}
+          onMouseDown={(e) => handleDragStart(e, "max")}
+          onTouchStart={(e) => handleDragStart(e, "max")}
         >
           <Label>{getMaxLabelText()}</Label>
         </Handle>
@@ -350,7 +350,7 @@ const PriceSlider = ({
               checked={selectedChip === index}
               onClick={() => handleButtonClick(step)}
             >
-              {index === 0 && '전체'}
+              {index === 0 && "전체"}
               {index !== 0 && index !== sliderSteps.length - 1 && `~${step}억`}
               {index === sliderSteps.length - 1 && `${step}억~`}
             </Chip>

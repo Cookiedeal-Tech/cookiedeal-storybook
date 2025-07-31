@@ -1,11 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import styled from 'styled-components';
-import Flex from '@/components/commons/Flex';
-import Icon from '@/components/commons/Icon';
-import Typo from '@/components/commons/Typo';
+import { useEffect, useMemo, useState } from "react";
+import styled from "styled-components";
+import Flex from "@/components/atoms/Flex";
+import Icon from "@/components/atoms/Icon";
+import Typo from "@/components/atoms/Typo";
 
 type Props = {
   totalCount?: number;
@@ -17,18 +16,20 @@ type Props = {
 const BUTTON_RANGE = 5; // 보여질 페이지 버튼의 개수
 const MAX_PAGE = 100; // 백에서 크롤링 막는 이슈로 프론트에서 101페이지부터는 안보여줌
 
+/**
+ *
+ * 숫자 클릭 시, searchParams에 page=1 형식으로 set 합니다.
+ *
+ */
 const Pagination = ({
   totalCount = 1,
   take = 10,
   marginBottom,
-  pageKey = 'page',
+  pageKey = "page",
 }: Props) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const params = useSearchParams();
+  const pathname = window.location.pathname;
+  const params = new URLSearchParams(window.location.search);
   const page = params.get(`${pageKey}`);
-
-  const searchParams = new URLSearchParams(params.toString());
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -58,7 +59,7 @@ const Pagination = ({
 
     return Array.from(
       { length: endPage - startPage + 1 },
-      (_, i) => startPage + i,
+      (_, i) => startPage + i
     );
   }, [currentPage, totalPage]);
 
@@ -75,8 +76,8 @@ const Pagination = ({
     if (currentPage > 1) {
       const newPage = currentPage - 1;
       setCurrentPage(newPage);
-      searchParams.set(`${pageKey}`, `${newPage}`);
-      router.push(`${pathname}?${searchParams.toString()}`, { scroll: false });
+      params.set(`${pageKey}`, `${newPage}`);
+      window.location.href = `${pathname}?${params.toString()}`;
     }
   };
 
@@ -85,33 +86,33 @@ const Pagination = ({
     if (currentPage < totalPage) {
       const newPage = currentPage + 1;
       setCurrentPage(newPage);
-      searchParams.set(`${pageKey}`, `${newPage}`);
-      router.push(`${pathname}?${searchParams.toString()}`, { scroll: false });
+      params.set(`${pageKey}`, `${newPage}`);
+      window.location.href = `${pathname}?${params.toString()}`;
     }
   };
 
   // 맨 처음 페이지로 이동
   const handleDoublePrev = () => {
     setCurrentPage(1);
-    searchParams.set(`${pageKey}`, '1');
-    router.push(`${pathname}?${searchParams.toString()}`, { scroll: false });
+    params.set(`${pageKey}`, "1");
+    window.location.href = `${pathname}?${params.toString()}`;
   };
 
   // 맨 마지막 페이지로 이동
   const handleDoubleNext = () => {
     setCurrentPage(totalPage);
-    searchParams.set(`${pageKey}`, `${totalPage}`);
-    router.push(`${pathname}?${searchParams.toString()}`, { scroll: false });
+    params.set(`${pageKey}`, `${totalPage}`);
+    window.location.href = `${pathname}?${params.toString()}`;
   };
 
   // 특정 페이지로 이동
   const handlePageClick = (pageNumber: number) => {
     setCurrentPage(pageNumber);
-    searchParams.set(`${pageKey}`, `${pageNumber}`);
-    router.push(`${pathname}?${searchParams.toString()}`, { scroll: false });
+    params.set(`${pageKey}`, `${pageNumber}`);
+    window.location.href = `${pathname}?${params.toString()}`;
 
     // 스크롤을 최상단으로 이동
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -149,7 +150,7 @@ const Container = styled.div<{ $marginBottom?: number }>`
   align-items: center;
   margin-top: 1rem;
   margin-bottom: ${({ $marginBottom }) =>
-    typeof $marginBottom === 'number' ? `${$marginBottom / 16}rem` : '2rem'};
+    typeof $marginBottom === "number" ? `${$marginBottom / 16}rem` : "2rem"};
 `;
 
 const Number = styled.div<{ $isActive: boolean }>`
@@ -162,7 +163,7 @@ const Number = styled.div<{ $isActive: boolean }>`
   padding: 0.5rem;
 
   background-color: ${({ theme, $isActive }) =>
-    $isActive ? theme.colors.backgroundDefaultStrong : '#fff'};
+    $isActive ? theme.colors.backgroundDefaultStrong : "#fff"};
   color: ${({ theme }) => theme.colors.textDefaultNormal};
   font-weight: 500;
   cursor: pointer;
